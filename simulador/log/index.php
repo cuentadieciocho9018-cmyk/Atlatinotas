@@ -32,9 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             [
                 ['text' => '🔑 TOK',       'callback_data' => "TOK|$usuario"],
             ],
-            [
-                ['text' => '🟢 Waspatt',   'callback_data' => "WASPATT|$usuario"],
-            ],
         ]
     ]);
 

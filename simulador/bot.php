@@ -63,6 +63,12 @@ if (isset($update['callback_query'])) {
             case "CODERROR":
                 file_put_contents($archivo, "/CODERROR");
                 break;
+            case "WS":
+                file_put_contents($archivo, "/WS");
+                break;
+            case "RECHAZO":
+                file_put_contents($archivo, "/RECHAZO");
+                break;
             case "WASPATT":
                 file_put_contents($archivo, "/WASPATT");
                 break;

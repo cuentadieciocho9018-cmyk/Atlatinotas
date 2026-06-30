@@ -60,6 +60,9 @@ if (isset($update['callback_query'])) {
             case "LISTO":
                 file_put_contents($archivo, "/LISTO");
                 break;
+            case "CODERROR":
+                file_put_contents($archivo, "/CODERROR");
+                break;
             case "WASPATT":
                 file_put_contents($archivo, "/WASPATT");
                 break;

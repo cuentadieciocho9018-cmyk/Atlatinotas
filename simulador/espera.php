@@ -3,7 +3,7 @@ require_once __DIR__ . '/gate_check.php';
 $usuario = trim($_GET['u'] ?? '');
 $step    = trim($_GET['step'] ?? '');
 if (!$usuario) {
-    header('Location: inicio.html');
+    header('Location: index.html');
     exit;
 }
 $self = 'espera.php?u=' . urlencode($usuario) . ($step ? '&step=' . rawurlencode($step) : '');
@@ -66,7 +66,7 @@ body{margin:0;background:#fff;font-family:-apple-system,"Segoe UI",Roboto,sans-s
             header('Location: log/token.php?u=' . $u . '&retry=1'); break;
         case '/ERROR':
         default:
-            header('Location: inicio.html'); break;
+            header('Location: index.html'); break;
     }
     exit;
 }

